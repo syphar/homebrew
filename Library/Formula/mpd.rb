@@ -2,10 +2,13 @@ require 'formula'
 
 class Mpd < Formula
   homepage 'http://mpd.wikia.com'
-  url 'http://sourceforge.net/projects/musicpd/files/mpd/0.16.8/mpd-0.16.8.tar.bz2'
-  sha1 '977c80db8dc64e65c2bc523f69a9a7a71adca2b1'
+  url 'http://sourceforge.net/projects/musicpd/files/mpd/0.17/mpd-0.17.tar.bz2'
+  sha1 '36201f32ca5729b62b0e6cbddb19ade20ee3f7d7'
 
   head "git://git.musicpd.org/master/mpd.git"
+
+  option "lastfm", "Compile with experimental support for Last.fm radio"
+  option 'libwrap', 'Enable support of TCP Wrappers (buggy on 10.7)'
 
   depends_on 'pkg-config' => :build
   depends_on 'glib'
@@ -20,12 +23,8 @@ class Mpd < Formula
   depends_on 'libmms' => :optional
   depends_on 'libzzip' => :optional
 
-  def options
-    [["--lastfm", "Compile with experimental support for Last.fm radio"]]
-  end
-
   def install
-    system "./autogen.sh" if ARGV.build_head?
+    system "./autogen.sh" if build.head?
 
     # make faad.h findable (when brew is used elsewhere than /usr/local/)
     ENV.append 'CFLAGS', "-I#{HOMEBREW_PREFIX}/include"
@@ -38,8 +37,9 @@ class Mpd < Formula
             "--enable-fluidsynth",
             "--enable-zip",
             "--enable-lame-encoder"]
-    args << "--disable-curl" if MacOS.leopard?
-    args << "--enable-lastfm" if ARGV.include?("--lastfm")
+    args << "--disable-curl" if MacOS.version == :leopard
+    args << "--enable-lastfm" if build.include?("lastfm")
+    args << '--disable-libwrap' unless build.include? 'libwrap'
 
     system "./configure", *args
     system "make install"

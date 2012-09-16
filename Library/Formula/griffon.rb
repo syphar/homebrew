@@ -2,13 +2,13 @@ require 'formula'
 
 class Griffon < Formula
   homepage 'http://griffon.codehaus.org/'
-  url 'http://dist.codehaus.org/griffon/griffon/0.9.x/griffon-0.9.4-bin.tgz'
-  md5 'e3f7972462d47f30a2e7d3893b360489'
+  url 'http://dist.codehaus.org/griffon/griffon/1.0.x/griffon-1.0.2-bin.zip'
+  sha1 '1ae2b9bf9ff44c85aaff19d88c342ede139e70f6'
 
   def install
     rm_f Dir["bin/*.bat"]
 
-    prefix.install %w[LICENSE README]
+    prefix.install %w[LICENSE README.md]
     libexec.install Dir['*']
     bin.install_symlink Dir["#{libexec}/bin/*"]
   end
